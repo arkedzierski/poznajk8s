@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-cm3-vol
+spec:
+  volumes:
+    - name: cm3-volume
+      configMap:
+          name: cm3
+          items:
+            - key: gen30.txt
+              path: 30gen.txt
+            - key: gen40.txt
+              path: gen40.config
+            - key: gen50.txt
+              path: gen50.txt
+  containers:
+  - name: pod-cm3-vol
+    image: poznajkubernetes/pkad:blue
+    resources:
+      limits:
+        memory: "128Mi"
+        cpu: "500m"
+    volumeMounts:
+      - mountPath: /etc/config
+        name: cm3-volume

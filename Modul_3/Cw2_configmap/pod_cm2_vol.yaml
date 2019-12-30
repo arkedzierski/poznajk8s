@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-cm2-vol
+spec:
+  volumes:
+    - name: cm2-volume
+      configMap:
+          name: cm2
+  containers:
+  - name: pod-cm2-vol
+    image: poznajkubernetes/pkad:blue
+    resources:
+      limits:
+        memory: "128Mi"
+        cpu: "500m"
+    volumeMounts:
+      - mountPath: /etc/config
+        name: cm2-volume

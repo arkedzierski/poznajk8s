@@ -1,0 +1,13 @@
+apiVersion: v1
+data:
+  123_TESTING: wartos1
+  TESTING: wartos3
+  TESTING-123: wartos2
+kind: ConfigMap
+metadata:
+  creationTimestamp: "2019-12-29T21:27:12Z"
+  name: cm1
+  namespace: default
+  resourceVersion: "143379"
+  selfLink: /api/v1/namespaces/default/configmaps/cm1
+  uid: 46c9b156-7b59-4bd9-aa34-65de7d241e66

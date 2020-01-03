@@ -55,29 +55,29 @@ vault kv put myapp/config username='appuser' password='suP3rsec(et!' ttl='30s'
 
 7. Ustawienie pozostałych zmiennych środowiskowych
 
-* pobranie konta serwisowego:
+    * pobranie konta serwisowego:
 
-```bash
-export VAULT_SA_NAME=$(kubectl get sa vault-auth -o jsonpath="{.secrets[*]['name']}")
-```
+    ```bash
+    export VAULT_SA_NAME=$(kubectl get sa vault-auth -o jsonpath="{.secrets[*]['name']}")
+    ```
 
-* wyciągniecie samego token
+    * wyciągniecie samego token
 
-```bash
-export SA_JWT_TOKEN=$(kubectl get secret $VAULT_SA_NAME -o jsonpath="{.data.token}" | base64 --decode; echo)
-```
+    ```bash
+    export SA_JWT_TOKEN=$(kubectl get secret $VAULT_SA_NAME -o jsonpath="{.data.token}" | base64 --decode; echo)
+    ```
 
-* klucz publiczny certyfikatu
+    * klucz publiczny certyfikatu
 
-```bash
-export SA_CA_CRT=$(kubectl get secret $VAULT_SA_NAME -o jsonpath="{.data['ca\.crt']}" | base64 --decode; echo)
-```
+    ```bash
+    export SA_CA_CRT=$(kubectl get secret $VAULT_SA_NAME -o jsonpath="{.data['ca\.crt']}" | base64 --decode; echo)
+    ```
 
-* adres hosta
+    * adres hosta
 
-```bash
-export K8S_HOST=kubernetes.docker.internal
-```
+    ```bash
+    export K8S_HOST=$(minikube ip)
+    ```
 
 8. Kończymy konfigurację Vault - włączamy uwierzytelnianie, dostęp do tokenów oraz stworzenie roli
 
@@ -86,9 +86,41 @@ vault auth enable kubernetes
 ```
 
 ```bash
-vault write auth/kubernetes/config token_reviewer_jwt="$SA_JWT_TOKEN" kubernetes_host="https://$K8S_HOST:6443" kubernetes_ca_cert="$SA_CA_CRT"
+vault write auth/kubernetes/config token_reviewer_jwt="$SA_JWT_TOKEN" kubernetes_host="https://$K8S_HOST:8443" kubernetes_ca_cert="$SA_CA_CRT"
 ```
 
 ```bash
 vault write auth/kubernetes/role/example bound_service_account_names=demo-pod bound_service_account_namespaces=default policies=myapp-kv-ro ttl=24h
 ```
+
+9. Stworzenie ConfigMap dla pod korzystającego z Vault
+
+plik konfiguracyjny `vault-agent-config.hcl` definuje sposób autoryzacji oraz rolę w Vault, jak również miejsce zapisu secretu.
+plik kofiguracyjny `consul-template-config.hcl` definuje jak odczytany sekret ma być zapisany (tu json) z wykorzystaniem template consul
+
+```bash
+kubectl create configmap example-vault-agent-config --from-file=./configs-k8s/
+```
+
+10. Stworzenie pod korzystającego z Vault
+
+    * sprawdzamy adres poda z Vault
+
+    ```bash
+    kubectl get pods -o wide
+
+    NAME    READY   STATUS    RESTARTS   AGE    IP           NODE       NOMINATED NODE   READINESS GATES
+    vault   1/1     Running   0          148m   172.17.0.4   minikube   <none>           <none>
+    ```
+
+    * tworzymy pod
+
+    ```bash
+    kubectl apply -f example-k8s-spec.yaml
+    ```
+
+    * sprawdzamy czy nasz sekret został pobrany"
+
+    ```bash
+    kubectl exec vault-agent-example -c exercise-secrets-from-vault -- ls -la ./secrets
+    ```

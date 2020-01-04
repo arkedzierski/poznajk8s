@@ -43,14 +43,18 @@ kubectl apply --filename vault-auth-service-account.yml
 vault policy write myapp-kv-ro myapp-kv-ro.hcl
 ```
 
-6. Utworzenie secretu do którego będziemy się dostawać (chwilę trzeba poczekać przed dodaniem)
+6. Wyłączamy KVv2, włączamy KVv1 i tworzymy secret do którego będziemy się dostawać
 
 ```bash
-vault secrets enable -path=myapp kv
+vault secrets disable secret
 ```
 
 ```bash
-vault kv put myapp/config username='appuser' password='suP3rsec(et!' ttl='30s'
+vault secrets enable -path=secret kv
+```
+
+```bash
+vault kv put secret/myapp/config username='appuser' password='suP3rsec(et!' ttl='30s'
 ```
 
 7. Ustawienie pozostałych zmiennych środowiskowych
@@ -122,5 +126,12 @@ kubectl create configmap example-vault-agent-config --from-file=./configs-k8s/
     * sprawdzamy czy nasz sekret został pobrany"
 
     ```bash
-    kubectl exec vault-agent-example -c exercise-secrets-from-vault -- ls -la ./secrets
+    kubectl exec vault-agent-example -c exercise-secrets-from-vault -- cat ./secrets/secrets.json
+
+    {
+        "username": "appuser",
+        "password": "suP3rsec(et!"
+
+    }
+
     ```

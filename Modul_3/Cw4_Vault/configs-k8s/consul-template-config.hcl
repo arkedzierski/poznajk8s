@@ -11,8 +11,8 @@ template {
   contents = <<EOH
   {
       {{- with secret "secret/myapp/config" }}
-      "username": "{{ .Data.data.username }}",
-      "password": "{{ .Data.data.password }}"
+      "username": "{{ .Data.username }}",
+      "password": "{{ .Data.password }}"
       {{ end }}
   }
   EOH

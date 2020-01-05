@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: container2container
+spec:
+  containers:
+  - name: nginx
+    image: nginx
+    resources:
+      limits:
+        memory: "128Mi"
+        cpu: "500m"
+    ports:
+      - containerPort: 80
+        name: http
+        protocol: TCP
+  - name: tools
+    image: giantswarm/tiny-tools
+    resources: {}
+    command: ["/bin/sh"]
+    args: ["-c", "sleep 3600"]
+    resources:
+      limits:
+        memory: "128Mi"
+        cpu: "500m"

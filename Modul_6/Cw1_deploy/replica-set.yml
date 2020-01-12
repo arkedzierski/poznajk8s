@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: pkad-rs
+  labels:
+    app: demo-rs
+    tier: pkad-rs
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      tier: pkad-rs
+  template:
+    metadata:
+      labels:
+        tier: pkad-rs
+    spec:
+      containers:
+      - name: pkad
+        image: poznajkubernetes/pkad:blue
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"

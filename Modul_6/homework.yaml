@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: pkad
+  name: pkad
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pkad
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: pkad
+    spec:
+      containers:
+      - image: poznajkubernetes/pkad:blue
+        name: pkad
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "200m"

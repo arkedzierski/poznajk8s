@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pk
+spec:
+  selector:
+    matchLabels:
+      app: pk
+  template:
+    metadata:
+      labels:
+        app: pk
+    spec:
+      containers:
+      - name: demo
+        image: poznajkubernetes/pkad:blue
+        resources: {}
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: pk
+spec:
+  selector:
+    app: pk
+  type: ClusterIP
+  ports:
+  - name: tcp-port
+    port: 80
+    targetPort: 8080
+    protocol: TCP

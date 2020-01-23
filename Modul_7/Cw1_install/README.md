@@ -56,6 +56,7 @@ replicaset.apps/nginx-ingress-controller-6fc5bcc8c9   1         1         1     
 
 Dalsza część zrobiona na podstawie:
 * https://kubernetes.io/docs/tasks/access-application-cluster/ingress-minikube/
+* https://kubernetes.github.io/ingress-nginx/user-guide/ingress-path-matching/
 * https://minikube.sigs.k8s.io/docs/tutorials/nginx_tcp_udp_ingress/
 
 ### Tworzymy deployment i service pk
@@ -110,8 +111,14 @@ metadata:
 (⎈ |minikube:default)]$ kubectl get ingress
 
 NAME              HOSTS   ADDRESS   PORTS   AGE
-ingress-test-pk   pk      192.168.99.109   80      2m15s
-
+ingress-test-pk   pk                80      39s
 ```
 
-Aby sprawdzić działanie dodajemy nazwę ip 192.168.99.109 z nazwą pk do `hosts`
+Aby sprawdzić działanie dodajemy ip `minikube ip` z nazwą `pk` do `c:/Windows/System32/drivers/etc/hosts`
+
+```
+# localhost name resolution is handled within DNS itself.
+#	127.0.0.1       localhost
+#	::1             localhost
+192.168.99.110  pk
+```

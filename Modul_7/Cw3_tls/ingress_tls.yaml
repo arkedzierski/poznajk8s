@@ -1,0 +1,94 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: dumpster-tls
+spec:
+  selector:
+    app: dumpster
+  ports:
+  - port: 80
+    targetPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dumpster
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: dumpster
+  template:
+    metadata:
+      labels:
+        app: dumpster
+    spec:
+      containers:
+      - name: dumpster
+        image: gutek/dumpster:v1
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "100m"
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: helloapp-multi-svc
+spec:
+  selector:
+    app: helloapp-multi-dep
+  ports:
+  - port: 80
+    targetPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: helloapp-multi-dep
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: helloapp-multi-dep
+  template:
+    metadata:
+      labels:
+        app: helloapp-multi-dep
+    spec:
+      containers:
+      - name: helloapp-multi-dep
+        image: poznajkubernetes/helloapp:multi
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "100m"
+        ports:
+        - containerPort: 8080
+---
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: ingress-tls
+  annotations:
+    cert-manager.io/issuer: "selfsigning-issuer"
+spec:
+  tls:
+  - hosts:
+    - dump.192-168-99-111.nip.io
+    secretName: tls-self-issuer
+  rules:
+  - host: dump.192-168-99-111.nip.io
+    http:
+      paths:
+      - backend:
+          serviceName: dumpster-tls
+          servicePort: 80
+  - host: app.192-168-99-111.nip.io
+    http:
+      paths:
+      - backend:
+          serviceName: helloapp-multi-svc
+          servicePort: 80

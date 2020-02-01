@@ -1,0 +1,25 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: cronjob-3m-p
+spec:
+  jobTemplate:
+    metadata:
+      name: cronjob-3m-p
+    spec:
+      parallelism: 2
+      template:
+        spec:
+          containers:
+          - image: busybox
+            name: cronjob-3m-p
+            resources:
+              limits:
+                memory: "128Mi"
+                cpu: "200m"
+            command:
+            - /bin/sh
+            - -c
+            - sleep 3m
+          restartPolicy: OnFailure
+  schedule: "*/2 * * * *"

@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: daemon-rolling-update
+spec:
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      name: pkad
+  template:
+    metadata:
+      labels:
+        name: pkad
+    spec:
+      containers:
+      - name: pkad
+        image: poznajkubernetes/pkad:blue
+        resources:
+              limits:
+                memory: "128Mi"
+                cpu: "200m"
+        readinessProbe:
+          httpGet:
+            path: /ready-error
+            port: 8080

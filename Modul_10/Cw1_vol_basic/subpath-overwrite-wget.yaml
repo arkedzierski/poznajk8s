@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: subpath-overwrite-wget
+data:
+  wget: "sh -c ls"
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: subpath-overwrite-pod-wget
+  labels:
+    name: subpath-overwrite-pod-wget
+spec:
+  volumes:
+  - name: cm
+    configMap:
+      name: subpath-overwrite-wget
+  containers:
+  - name: subpath-overwrite-pod-pkad
+    image: poznajkubernetes/pkad
+    volumeMounts:
+    - name: cm
+      mountPath: /usr/bin/wget
+      subPath: wget
+    resources:
+      limits:
+        memory: "128Mi"
+        cpu: "200m"
+  restartPolicy: Never

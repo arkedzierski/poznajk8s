@@ -1,0 +1,53 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: vol-sc
+provisioner: k8s.io/minikube-hostpath
+reclaimPolicy: Retain
+allowVolumeExpansion: true
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: vol-pvc-sc-subpath
+spec:
+  storageClassName: "vol-sc"
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 0.5Mi
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: vol-pod-subpath
+  labels:
+    name: www
+spec:
+  containers:
+  - name: main
+    image: nginx
+    volumeMounts:
+      - mountPath: /usr/share/nginx/html/index.html
+        name: index
+        subPath: index.html
+    resources:
+      limits:
+        memory: "128Mi"
+        cpu: "200m"
+    ports:
+      - containerPort: 80
+  initContainers:
+    - name: init
+      image: poznajk8s/ubuntugit:v1
+      command: ["/bin/sh", "-c"]
+      args:
+        - echo "hello from subpath!!!" > /index/index.html;
+      volumeMounts:
+        - mountPath: /index
+          name: index
+  volumes:
+  - name: index
+    persistentVolumeClaim:
+        claimName: vol-pvc-sc-subpath

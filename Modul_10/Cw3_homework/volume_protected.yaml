@@ -1,0 +1,45 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: vol-secret
+type: Opaque
+data:
+  username: U2VjcmV0VXNlcg==
+  password: U2VjcmV0UGFzc3dvcmQ=
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: vol-config
+data:
+  config: "defaultConfig"
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: volume-protected
+spec:
+  containers:
+  - name: vol-protect
+    image: busybox
+    volumeMounts:
+    - name: all-in-one
+      mountPath: "/projected-volume"
+      readOnly: true
+    command: ["sleep", "3000"]
+  volumes:
+  - name: all-in-one
+    projected:
+      sources:
+      - secret:
+          name: vol-secret
+          items:
+            - key: username
+              path: data/user
+            - key: password
+              path: data/pass
+      - configMap:
+          name: vol-config
+          items:
+            - key: config
+              path: data/config

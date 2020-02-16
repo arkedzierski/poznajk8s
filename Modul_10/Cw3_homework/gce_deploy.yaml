@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gke-vol-dep
+  namespace: testgke
+spec:
+  replicas: 10
+  selector:
+    matchLabels:
+      app: webapp
+  strategy: {}
+  template:
+    metadata:
+      name: gke-vol-pod
+      labels:
+        app: webapp
+    spec:
+      containers:
+      - image: nginx
+        name: web
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - mountPath: /usr/share/nginx/html
+          name: html
+      volumes:
+        - name: html
+          persistentVolumeClaim:
+            claimName: gce-pd-pvc

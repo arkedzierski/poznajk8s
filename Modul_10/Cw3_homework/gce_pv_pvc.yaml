@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: gce-pv
+spec:
+  storageClassName: ""
+  capacity:
+    storage: 10G
+  accessModes:
+    - ReadOnlyMany
+  gcePersistentDisk:
+    pdName: poznajk8s-pd-disk1
+    fsType: ext4
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: testgke
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: gce-pd-pvc
+  namespace: testgke
+spec:
+  storageClassName: ""
+  volumeName: gce-pv
+  accessModes:
+    - ReadOnlyMany
+  resources:
+    requests:
+      storage: 200Mi

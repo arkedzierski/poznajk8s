@@ -68,7 +68,7 @@ Klaster można utowrzyć w konsoli Google Cloud Platform lub poleceniem:
 root@c378145551c4:/# gcloud container clusters create poznajk8s-cluster-1 --zone us-central1-a --enable-cloud-logging --enable-cloud-monitoring --subnetwork default
 ```
 
-Jeśli w konsoli GCP ustawienie kredek dla klastra:
+Jeśli w konsoli to trzeba pobrać kredki do klastra:
 
 ```bash
 root@c378145551c4:~# gcloud container clusters get-credentials poznajk8s-cluster-1 --zone us-central1-a
@@ -79,7 +79,7 @@ kubeconfig entry generated for poznajk8s-cluster-1.
 
 Drugą konsole można mieć z Cloud Shell
 
-Niezależnie od metody powinniśmy uzyskać efekt natępujący:
+Niezależnie od metody powinniśmy uzyskać efekt następujący:
 
 ```bash
 root@c378145551c4:/# kubectl get nodes

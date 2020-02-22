@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: stateful-git
+spec:
+  serviceName: stateful-svc
+  selector:
+    matchLabels:
+      app: stateful-pod
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: stateful-pod
+    spec:
+      containers:
+      - name: main
+        image: nginx
+        volumeMounts:
+          - mountPath: /usr/share/nginx/html/
+            name: repo-emptydir
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "200m"
+        ports:
+          - containerPort: 80
+      initContainers:
+        - name: init
+          image: ubuntu
+          command: ["/bin/sh", "-c"]
+          args:
+          - apt-get update;
+            apt-get install -y git;
+            git clone https://github.com/PoznajKubernetes/poznajkubernetes.github.io /repo_emptyDir;
+          volumeMounts:
+            - mountPath: /repo_emptyDir
+              name: repo-emptydir
+      volumes:
+      - name: repo-emptydir
+        emptyDir: {} 
